@@ -1,0 +1,26 @@
+th {
+	padding: 5px;
+    text-align: left;
+}
+
+#start {
+	margin: 20px 0 10px 107px;
+	background: yellow;
+}
+
+#buy {
+	width: 70px;
+	background: lightgreen;
+}
+
+#base {
+	margin-left: 9px;
+	font-size: 20px;
+	font-weight: 600;
+}
+
+#sign {
+	margin-left: 9px;
+	font-size: 20px;
+	font-weight: 600;
+}
