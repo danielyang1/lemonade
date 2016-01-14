@@ -12,13 +12,19 @@ function getWeather(temp) {
 	for(var i=0 ; i < days ; i++){
 		temp.push(Math.floor((Math.random() * 18) + 18) + Math.floor((Math.random() * 18) + 18+ Math.floor((Math.random() * 18) + 18)));
 }
-	return temp.join(' | ');
+	return temp.join(' || ');
 }
 
 function checkTotal (howManyC, howManyS, howManyI, howManyL) {
 	var total;
 	total = howManyC+howManyS+howManyI+howManyL;
+	console.log(" Cost of a number of Cups "+howManyC)
+	console.log(" Cost of a number of Sugar "+ howManyS)
+	console.log(" Cost of a number of Ice "+howManyI.toFixed(2))
+	console.log(" Cost of a number of Lemons "+howManyL)
+	console.log(" Total COST of ALL ITEMS "+total.toFixed(2))
 	return total;
+	console.log(total)
 }
 
 function minusCostFromBasePrice (base, basket) {
@@ -64,11 +70,13 @@ function calcBuy (amt, cost) {
 	return items;
 }
 
-function checkIfCanBuy (basket, base) {
-	while ( base - basket < 0 ){
+function checkIfCanBuy (base, basket) {
+	if ( base < basket ) {
+		console.log(base);
+		console.log(basket);
 		console.log("Can't afford THIS. Remove some items.");
 		return false;
-}	if ( base - basket > 0 ) {
+	} else if (base >= basket) {
 		console.log("Purchase Successful. You CAN afford.");
 		return true;
 	}
@@ -156,17 +164,22 @@ function getDemandMultiplier (cupPrice){
 function makeHowManyCups (currentTotalC, currentTotalS, currentTotalI, currentTotalL) {
 	if (currentTotalC < currentTotalS && currentTotalC < currentTotalI && currentTotalC < currentTotalL){
 		console.log("Made "+currentTotalC+" cups of lemonade!");
+		return currentTotalC;
 	} else if (currentTotalS < currentTotalC && currentTotalS < currentTotalI && currentTotalS < currentTotalL) {
 		console.log("Made "+currentTotalS+" cups of lemonade!");
+		return currentTotalS;
 	} else	if (currentTotalI < currentTotalC && currentTotalI < currentTotalS && currentTotalI < currentTotalL) {
 		console.log("Made "+currentTotalI+" cups of lemonade!");
+		return currentTotalI;
 	} else {
 		console.log("Made "+currentTotalL+" cups of lemonade!");
+		return currentTotalL;
 	}
 }
 
-function addProfit (argument) {
-	// body...
+function balanceAcct () {
+	
+	profit = cupsMade 
 }
 
 function addSevenDays (argument) {
@@ -264,7 +277,12 @@ function main() {
 start.onclick=function () {
 	var dayTemp;
 	var demand;
-	if (currentTotalC === 0 || currentTotalS === 0 ||currentTotalI === 0 ||currentTotalL === 0) {
+	
+	if (currentWallet <= 0 || grandTotal <= 0) {
+		if(currentTotalC === 0 || currentTotalS === 0 ||currentTotalI === 0 ||currentTotalL === 0) {
+			alert("Game Over! You have no more money!")
+		}
+	} else if (currentTotalC === 0 || currentTotalS === 0 ||currentTotalI === 0 ||currentTotalL === 0) {
 		alert("Need more Ingredients!");
 	} else {
 	cupPrice = setCupPrice(); //user input price of cup
@@ -272,38 +290,42 @@ start.onclick=function () {
 	tempVar = timesWeather(dayTemp);
 	demand = getDemandMultiplier(cupPrice);
 	base = grandTotal;
-	currentWallet = grandTotal;
+	// currentWallet = grandTotal;
 	console.log("Temp Variable "+tempVar);
-	console.log(demand+" Demand");
-	// d++;
+	console.log(demand+" Multiplier dependent on $ of Cup");
+	}
 }
-}
+
 	buy.onclick=function () {
 		amtOfC = getAmount("cup");
 		amtOfS = getAmount("sugar");
 		amtOfI = getAmount("ice");
 		amtOfL = getAmount("lemon");
-
 		wholesaleC = setPrice(amtOfC, limitC, cupCost);
 		wholesaleS = setPrice(amtOfS, limitS, sugarCost);
 		wholesaleI = setPrice(amtOfI, limitI, iceCost);
 		wholesaleL = setPrice(amtOfL, limitL, lemonCost);
-		
 		howManyC = calcBuy(amtOfC, wholesaleC);
 		howManyS = calcBuy(amtOfS, wholesaleS);
 		howManyI = calcBuy(amtOfI, wholesaleI);
 		howManyL = calcBuy(amtOfL, wholesaleL);
 		
 		basket = checkTotal(howManyC, howManyS, howManyI, howManyL);
-		decide = checkIfCanBuy(basket, base);
-				
-		console.log(decide+" basket dollars");
+		decide = checkIfCanBuy(currentWallet, basket);
 
-	if (decide == false) {
+		console.log(currentWallet + " Supposed current wallet")
+		console.log(basket+" Basket");
+
+	if (decide === false) {
+		console.log(decide);
 		alert("You can't afford all of that!");
+	} else {;
+		currentWallet = storeInventory(Number(currentWallet).toFixed(2), Number(-basket).toFixed(2));
+		amtOfC = getAmount("cup");
+		amtOfS = getAmount("sugar");
+		amtOfI = getAmount("ice");
+		amtOfL = getAmount("lemon");
 		alert(decide);
-		return;
-	} else {
 		totalCup = tallyFirst(amtOfC);
 		totalSugar = tallyFirst(amtOfS);
 		totalIce = tallyFirst(amtOfI);
@@ -313,96 +335,36 @@ start.onclick=function () {
 		currentTotalS = storeInventory(currentTotalS, amtOfS);
 		currentTotalI = storeInventory(currentTotalI, amtOfI);
 		currentTotalL = storeInventory(currentTotalL, amtOfL);
-		currentWallet = storeInventory(Number(currentWallet), Number(-basket));
-
-		grandTotal = minusCostFromBasePrice(base, basket).toFixed(2);
-
+		
 		displayC = displayInput("cupcup", currentTotalC);
 		displayS = displayInput("sugarsugar", currentTotalS);
 		displayI = displayInput("iceice", currentTotalI);
 		displayL = displayInput("lemonlemon", currentTotalL);
-		displayBase = displayInput("base", currentWallet.toFixed(2));
 
+		displayBase = displayInput("base", currentWallet.toFixed(2));
+		decide = checkIfCanBuy(currentWallet, basket);
+			console.log(basket+" basket nOW!")
+			console.log(currentWallet+" CurrentWallet nOW!")
 		cupsMade = makeHowManyCups(currentTotalC, currentTotalS, currentTotalI, currentTotalL);
 
-		console.log(base);
-		console.log(currentWallet);
+		// currentWallet = storeInventory(Number(currentWallet).toFixed(2), Number(-basket).toFixed(2));
+		// grandTotal = minusCostFromBasePrice(base, basket).toFixed(2);
+	
+		console.log(currentWallet+" my WALLET**!!!");
 		console.log("Cost * Amt "+howManyC.toFixed(2));
 		console.log("Cost * Amt "+howManyS.toFixed(2));
 		console.log("Cost * Amt "+howManyI.toFixed(2));
 		console.log("Cost * Amt "+howManyL.toFixed(2));
-
 		console.log(totalSugar);
 		console.log(currentTotalS);
 		console.log(wholesaleS);
 		console.log(howManyS);
-		
-		console.log(base+" base $");
-		console.log(basket+" what i want to buy");
-		console.log(grandTotal+" Supposed to be GrandTotal");
 
+		console.log(currentWallet+" Current Wallet $");
+		console.log(basket+" what i want to buy");
+		console.log(currentWallet+" Supposed to be GrandTotal");
 }
 }
 }
 
 main();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//how to reach into Objects/ using Arrays
-// function calcValuePrice () {
-// 	var prices,abs, myArray, stuff;
-
-// 	myArray = [
-// 		prices = {
-// 			regCups: .05,
-// 			regSugar: .12,
-// 			regIce: .05,
-// 			regLemon: .30,
-// 			valueCups: .04,
-// 			valueSugar: .01,
-// 			valueIce: .04,
-// 			valueLemon: .15,
-// 			},
-// 		abs = {
-// 			superman: 1
-// 		},
-// 		stuff = {
-// 			ironman: "iron"
-// 		}
-// 	];
-// 		return myArray;
-// }
-
-// console.log(calcValuePrice()[2].ironman);
