@@ -45,10 +45,10 @@ function setPrice (amt, qty, cost) {
 function calcPriceOfMaterials () {
 	var pricesR;
 	pricesR = {
-		regCups: .05,
-		regSugar: .12,
-		regIce: .05,
-		regLemon: .08,
+		regCups: .04,
+		regSugar: .10,
+		regIce: .04,
+		regLemon: .06,
 	}
 	return pricesR;
 }
@@ -109,19 +109,19 @@ function timesWeather (temperature) {
 		if (temperature < 50) {
 		 	salesVar = 0;
 		} else if (temperature >= 50 && temperature < 60) {
-			salesVar = .5;
-
-		} else if (temperature >= 60 && temperature < 70) {
-			salesVar = .7;
-
-		} else if (temperature >= 70 && temperature < 80) {
 			salesVar = .8;
 
+		} else if (temperature >= 60 && temperature < 70) {
+			salesVar = .88;
+
+		} else if (temperature >= 70 && temperature < 80) {
+			salesVar = .91;
+
 		} else if (temperature >= 80 && temperature < 90) {
-			salesVar = .85;
+			salesVar = .94;
 
 		} else if (temperature >= 90) {
-			salesVar = 1;
+			salesVar = 1.15;
 		}
 		return salesVar;
 }
@@ -145,7 +145,7 @@ function getDemandMultiplier (cupPrice){
 	over = .60;
 	under = .40;
 	silly = .70;
-	a = 1;
+	a = 1.1;
 	b = .8;
 	c = .9;
 	d = 0;
@@ -162,13 +162,13 @@ function getDemandMultiplier (cupPrice){
 }
 
 function makeHowManyCups (currentTotalC, currentTotalS, currentTotalI, currentTotalL) {
-	if (currentTotalC < currentTotalS && currentTotalC < currentTotalI && currentTotalC < currentTotalL){
+	if (currentTotalC <= currentTotalS && currentTotalC <= currentTotalI && currentTotalC <= currentTotalL){
 		console.log("Made "+currentTotalC+" cups of lemonade!");
 		return currentTotalC;
-	} else if (currentTotalS < currentTotalC && currentTotalS < currentTotalI && currentTotalS < currentTotalL) {
+	} else if (currentTotalS <= currentTotalC && currentTotalS <= currentTotalI && currentTotalS <= currentTotalL) {
 		console.log("Made "+currentTotalS+" cups of lemonade!");
 		return currentTotalS;
-	} else	if (currentTotalI < currentTotalC && currentTotalI < currentTotalS && currentTotalI < currentTotalL) {
+	} else	if (currentTotalI <= currentTotalC && currentTotalI <= currentTotalS && currentTotalI <= currentTotalL) {
 		console.log("Made "+currentTotalI+" cups of lemonade!");
 		return currentTotalI;
 	} else {
@@ -177,20 +177,20 @@ function makeHowManyCups (currentTotalC, currentTotalS, currentTotalI, currentTo
 	}
 }
 
-function balanceAcct () {
-	
-	profit = cupsMade 
+function balanceAcct (cups, temp, demand, price) {
+	var profit;
+	profit = +cups*+temp*+demand*+price;
+	return profit;
 }
 
-function addSevenDays (argument) {
-	// body...
+function calcProfAndSales (profit, basket) {
+	var combined;
+	combined = profit - basket;
+	return combined;
 }
-
-// function calcLemonade (amtOfC, amtOfL, amtOfI, amtOfS) {
-// 	c = 1 or c=7.
-// }
 
 function main() {
+	console.clear();
 	var temperature;
 	var amtOfC;
 	var amtOfS;
@@ -277,10 +277,13 @@ function main() {
 start.onclick=function () {
 	var dayTemp;
 	var demand;
+	var profit;
+	var youMade;
+	var fewestItem;
 	
 	if (currentWallet <= 0 || grandTotal <= 0) {
 		if(currentTotalC === 0 || currentTotalS === 0 ||currentTotalI === 0 ||currentTotalL === 0) {
-			alert("Game Over! You have no more money!")
+			alert("Game Over! You have no more money nor can you sell a cup!")
 		}
 	} else if (currentTotalC === 0 || currentTotalS === 0 ||currentTotalI === 0 ||currentTotalL === 0) {
 		alert("Need more Ingredients!");
@@ -290,7 +293,39 @@ start.onclick=function () {
 	tempVar = timesWeather(dayTemp);
 	demand = getDemandMultiplier(cupPrice);
 	base = grandTotal;
-	// currentWallet = grandTotal;
+	profit = balanceAcct(cupsMade, tempVar, demand, cupPrice);
+	youMade = calcProfAndSales(profit, basket);
+	currentWallet = storeInventory(currentWallet, youMade);
+	fewestItem = makeHowManyCups(currentTotalC, currentTotalS, currentTotalI, currentTotalL);
+	console.log("SHould be C as fewest Items! "+fewestItem);
+
+	currentTotalC = storeInventory(currentTotalC, -fewestItem);
+	currentTotalS = storeInventory(currentTotalS, -fewestItem);
+	currentTotalI = storeInventory(currentTotalI, -fewestItem);
+	currentTotalL = storeInventory(currentTotalL, -fewestItem);
+	console.log("**SHould be -3 "+currentTotalC);
+
+	displayBase = displayInput("base", currentWallet.toFixed(2));
+	displayC = displayInput("cupcup", currentTotalC);
+	displayS = displayInput("sugarsugar", currentTotalS);
+	displayI = displayInput("iceice", currentTotalI);
+	displayL = displayInput("lemonlemon", currentTotalL);
+
+	//days over
+	day++;
+	if (day >= 7) {
+		alert("Thanks for playing. You're ending balance is " + currentWallet.toFixed);
+		main();
+	}
+	console.log("Day Number: "+day);
+	
+
+	console.log("Made THIS MUCH!!! "+youMade);
+	console.log("Current + Profits "+currentWallet);
+
+	console.log(Number(profit)+ " Sales Today");
+	console.log("Cups Price "+cupPrice);
+	console.log("Cups Made "+cupsMade);
 	console.log("Temp Variable "+tempVar);
 	console.log(demand+" Multiplier dependent on $ of Cup");
 	}
@@ -301,6 +336,9 @@ start.onclick=function () {
 		amtOfS = getAmount("sugar");
 		amtOfI = getAmount("ice");
 		amtOfL = getAmount("lemon");
+		if (isNaN(amtOfC) || isNaN(amtOfS) || isNaN(amtOfI) || isNaN(amtOfL)) {
+			alert("Please enter a number!");
+		} else {
 		wholesaleC = setPrice(amtOfC, limitC, cupCost);
 		wholesaleS = setPrice(amtOfS, limitS, sugarCost);
 		wholesaleI = setPrice(amtOfI, limitI, iceCost);
@@ -325,7 +363,7 @@ start.onclick=function () {
 		amtOfS = getAmount("sugar");
 		amtOfI = getAmount("ice");
 		amtOfL = getAmount("lemon");
-		alert(decide);
+
 		totalCup = tallyFirst(amtOfC);
 		totalSugar = tallyFirst(amtOfS);
 		totalIce = tallyFirst(amtOfI);
@@ -350,7 +388,6 @@ start.onclick=function () {
 		// currentWallet = storeInventory(Number(currentWallet).toFixed(2), Number(-basket).toFixed(2));
 		// grandTotal = minusCostFromBasePrice(base, basket).toFixed(2);
 	
-		console.log(currentWallet+" my WALLET**!!!");
 		console.log("Cost * Amt "+howManyC.toFixed(2));
 		console.log("Cost * Amt "+howManyS.toFixed(2));
 		console.log("Cost * Amt "+howManyI.toFixed(2));
@@ -363,6 +400,9 @@ start.onclick=function () {
 		console.log(currentWallet+" Current Wallet $");
 		console.log(basket+" what i want to buy");
 		console.log(currentWallet+" Supposed to be GrandTotal");
+		console.log("Cups of Lemonade available to sell: "+cupsMade);
+
+}
 }
 }
 }
