@@ -24,3 +24,8 @@ th {
 	font-size: 20px;
 	font-weight: 600;
 }
+
+#weatherField {
+	color: blue;
+	font-weight: 700;
+}

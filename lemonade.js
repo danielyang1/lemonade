@@ -100,7 +100,7 @@ function storeInventory (total, amt) {
 function weather (temp, i) {
 	var day;
 	day = temp[i];
-	console.log("Today's Temp is "+day);
+	alert("Today's Temp is "+day);
 	return day;
 }
 
@@ -303,26 +303,23 @@ start.onclick=function () {
 	currentTotalS = storeInventory(currentTotalS, -fewestItem);
 	currentTotalI = storeInventory(currentTotalI, -fewestItem);
 	currentTotalL = storeInventory(currentTotalL, -fewestItem);
-	console.log("**SHould be -3 "+currentTotalC);
 
 	displayBase = displayInput("base", currentWallet.toFixed(2));
 	displayC = displayInput("cupcup", currentTotalC);
 	displayS = displayInput("sugarsugar", currentTotalS);
 	displayI = displayInput("iceice", currentTotalI);
 	displayL = displayInput("lemonlemon", currentTotalL);
-
+	alert("Days over! You made this much: "+youMade.toFixed(2)+".")
 	//days over
 	day++;
 	if (day >= 7) {
-		alert("Thanks for playing. You're ending balance is " + currentWallet.toFixed);
+		alert("Thanks for playing. You're ending balance is " + currentWallet.toFixed(2));
+		alert("TIP: Buy more ingredients to make more money!");
 		main();
 	}
 	console.log("Day Number: "+day);
-	
-
 	console.log("Made THIS MUCH!!! "+youMade);
 	console.log("Current + Profits "+currentWallet);
-
 	console.log(Number(profit)+ " Sales Today");
 	console.log("Cups Price "+cupPrice);
 	console.log("Cups Made "+cupsMade);
